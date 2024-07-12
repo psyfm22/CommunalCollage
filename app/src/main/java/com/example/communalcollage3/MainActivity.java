@@ -1,26 +1,23 @@
 package com.example.communalcollage3;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.ImageView;
 
-import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.view.View;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,8 +31,9 @@ https://developer.android.com/training/permissions/requesting
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_READ_MEDIA = 1;
-    private ImageView[] imageViews = new ImageView[5];
     ArrayList<CollageCard> pictureSlide = new ArrayList<CollageCard>();;
+    ActivityResultLauncher<Intent> resultLauncher;
+
 
     private static final String TAG = "COMP3018";
     RecyclerView recyclerView;
@@ -46,14 +44,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Find the ideas for the array
-//        imageViews[0] = findViewById(R.id.imageView);
-//        imageViews[1] = findViewById(R.id.imageView2);
-//        imageViews[2] = findViewById(R.id.imageView3);
-//        imageViews[3] = findViewById(R.id.imageView4);
-//        imageViews[4] = findViewById(R.id.imageView5);
-
         recyclerView = findViewById(R.id.recyclerView);
+
+
+        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+                resultLauncher.launch(intent);
+            }
+        });
+        resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Log.d(TAG,"Jellow");
+                    }
+                }
+        );
 
         //Can probably make this simplified once I know the SDK of the tablet
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -140,4 +147,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "The number of files=" +numberOfFiles);
         return numberOfFiles;
     }
+
+
+
 }
