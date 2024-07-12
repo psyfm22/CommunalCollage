@@ -14,6 +14,7 @@
         android:layout_marginTop="40dp"
         android:layout_marginEnd="450dp"
         android:layout_marginBottom="26dp"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toTopOf="@+id/imageView4"
         app:layout_constraintEnd_toStartOf="@+id/imageView3"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,6 +26,7 @@
         android:layout_width="0dp"
         android:layout_height="350dp"
         android:layout_marginEnd="49dp"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imageView3"
         app:layout_constraintStart_toEndOf="@+id/imageView4"
@@ -38,6 +40,7 @@
         android:layout_marginStart="76dp"
         android:layout_marginEnd="51dp"
         android:layout_marginBottom="34dp"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imageView2"
         app:layout_constraintStart_toStartOf="parent"
@@ -49,9 +52,11 @@
         android:layout_width="0dp"
         android:layout_height="350dp"
         android:layout_marginEnd="54dp"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView1"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
