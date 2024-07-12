@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        CollageRecyclerViewAdapter adapter = new CollageRecyclerViewAdapter(this,catList);
+        CollageRecyclerViewAdapter adapter = new CollageRecyclerViewAdapter(this,pictureSlide);
         recyclerView.setAdapter(adapter);
 
     }
@@ -95,25 +95,30 @@ public class MainActivity extends AppCompatActivity {
 
         int numberOfFiles = findNumberOfImages();
 
-        for(int i=0;i<numberOfFiles;i+=4){
+        //1,2,3,4,5
+        for(int i=0;i<(numberOfFiles);i+=4){
             CollageCard collageCard = new CollageCard();
             int holderNumber = numberOfFiles - i;
 
             if(holderNumber >=4){
+                Log.d(TAG,"In greater or equal than 4");
                 collageCard.numberOfImages=4;
-                collageCard.imageUrl[0] = "";
-                collageCard.imageUrl[1] = "";
-                collageCard.imageUrl[2] = "";
-                collageCard.imageUrl[3] = "";
+                collageCard.imageUrl[0] = "/sdcard/Pictures/image"+i+".jpg";
+                collageCard.imageUrl[1] = "/sdcard/Pictures/image"+(i+1)+".jpg";
+                collageCard.imageUrl[2] = "/sdcard/Pictures/image"+(i+2)+".jpg";
+                collageCard.imageUrl[3] = "/sdcard/Pictures/image"+(i+3)+".jpg";
 
             }else{
+                Log.d(TAG,"In less than 4");
+                collageCard.numberOfImages = holderNumber;
+                for(int j=0; j<holderNumber;j++){
+                    collageCard.imageUrl[j] =  "/sdcard/Pictures/image"+(i+j)+".jpg";
+                }
+                for (int j = holderNumber; j < 4; j++) {
+                    collageCard.imageUrl[j] = null;
+                }
 
             }
-
-
-
-            catcatCard.resourceId = getResources().getIdentifier("@drawable/cat"+i,"drawable", getPackageName());
-            catcatCard.catName = catNames[i];
             pictureSlide.add(collageCard);
         }
     }

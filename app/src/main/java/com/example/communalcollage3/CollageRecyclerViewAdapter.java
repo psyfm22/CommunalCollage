@@ -21,6 +21,10 @@ public class CollageRecyclerViewAdapter  extends RecyclerView.Adapter<CollageRec
     private Context context;
     private LayoutInflater layoutInflater;
 
+    private static final int VIEW_TYPE_ONE = 0;
+    private static final int VIEW_TYPE_TWO = 1;
+    private static final int VIEW_TYPE_THREE = 2;
+
     //Initialise the adapter with the context and dataItems
     public CollageRecyclerViewAdapter(Context context, List<CollageCard> dataItems) {
         this.dataItems = dataItems;
@@ -28,11 +32,24 @@ public class CollageRecyclerViewAdapter  extends RecyclerView.Adapter<CollageRec
         this.layoutInflater = (LayoutInflater)
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
+    @Override
+    public int getItemViewType(int position) {
+        // Alternate between three view types
+        return position % 3;
+    }
 
     //Creates an instance of CollageViewHolder
     @Override
     public CollageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = layoutInflater.inflate(R.layout.collage_card_layout, parent, false);
+        View itemView;
+        if (viewType == VIEW_TYPE_ONE) {
+            itemView = layoutInflater.inflate(R.layout.collage_card_layout, parent, false);
+        }else if(viewType == VIEW_TYPE_TWO) {
+            itemView = layoutInflater.inflate(R.layout.collage_card_layout2, parent, false);
+        }else{
+            itemView = layoutInflater.inflate(R.layout.collage_card_layout3, parent, false);
+        }
+
         return new CollageViewHolder(itemView);
     }
 
@@ -66,10 +83,8 @@ public class CollageRecyclerViewAdapter  extends RecyclerView.Adapter<CollageRec
         }
         void bind(final CollageCard collage)
         {
-            String input = "/sdcard/Pictures/image";
-            String input2 = ".jpg";
             for(int i=0 ;i<collage.numberOfImages;i++){
-                File imgFile = new File(input + i + input2);
+                File imgFile = new File(collage.imageUrl[i]);
                 if (imgFile.exists()) {
                     Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
                     imageViews[i].setImageBitmap(bitmap);
