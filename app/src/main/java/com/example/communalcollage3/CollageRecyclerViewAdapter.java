@@ -1,34 +1,27 @@
 package com.example.communalcollage3;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
-
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.io.File;
 import java.util.List;
 
 public class CollageRecyclerViewAdapter  extends RecyclerView.Adapter<CollageRecyclerViewAdapter.CollageViewHolder> {
 
 
-    private List<CollageCard> dataItems;//Stores the data items
-    private Context context;
-    private LayoutInflater layoutInflater;
+    private final List<CollageCard> dataItems;//Stores the data items
+    //private Context context; Not needed at this point
+    private final LayoutInflater layoutInflater;
 
     private static final int VIEW_TYPE_ONE = 0;
     private static final int VIEW_TYPE_TWO = 1;
-    private static final int VIEW_TYPE_THREE = 2;
 
     //Initialise the adapter with the context and dataItems
     public CollageRecyclerViewAdapter(Context context, List<CollageCard> dataItems) {
         this.dataItems = dataItems;
-        this.context = context;
+    //    this.context = context;
         this.layoutInflater = (LayoutInflater)
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -54,7 +47,7 @@ public class CollageRecyclerViewAdapter  extends RecyclerView.Adapter<CollageRec
     }
 
 
-    //Binds the data items ot the views inside the Viewholder
+    //Binds the data items ot the views inside the View holder
     @Override
     public void onBindViewHolder(CollageViewHolder holder, int position) {
         holder.bind(dataItems.get(position));
@@ -75,6 +68,7 @@ public class CollageRecyclerViewAdapter  extends RecyclerView.Adapter<CollageRec
         CollageViewHolder(View itemView)
         {
             super(itemView);
+            //Assign all the imageViews
             imageViews[0] = itemView.findViewById(R.id.imageView1);
             imageViews[1]  = itemView.findViewById(R.id.imageView2);
             imageViews[2]  = itemView.findViewById(R.id.imageView3);
@@ -82,22 +76,12 @@ public class CollageRecyclerViewAdapter  extends RecyclerView.Adapter<CollageRec
         }
         void bind(final CollageCard collage)
         {
+            // For each image if there is a bitmap then assign
             for(int i=0; i<collage.numberOfImages;i++){
                 if(collage.bitmaps[i] != null){
                     imageViews[i].setImageBitmap(collage.bitmaps[i]);
                 }
             }
-
-
-
-//            for(int i=0 ;i<collage.numberOfImages;i++){
-//                File imgFile = new File(collage.imageUrl[i]);
-//                if (imgFile.exists()) {
-//                    Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-//                    imageViews[i].setImageBitmap(bitmap);
-//                }
-//                counter++;
-//            }
         }
 
     }
