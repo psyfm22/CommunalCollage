@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,11 +39,13 @@ https://developer.android.com/training/permissions/requesting
 
 public class MainActivity extends AppCompatActivity {
 
+    AnimationDrawable animationDrawable;
     private static final int REQUEST_CODE_READ_MEDIA = 1;
     ArrayList<CollageCard> pictureSlide = new ArrayList<CollageCard>();
     private static final String TAG = "COMP3018";
     RecyclerView recyclerView;
     CollageCard collageCard;
+    ImageView loadingImageView;
 
 
     @Override
@@ -49,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         recyclerView = findViewById(R.id.recyclerView);//Assign the recycler view
+        loadingImageView = findViewById(R.id.loadingImageView);
+        animationDrawable = (AnimationDrawable) loadingImageView.getDrawable();
+        animationDrawable.start();
 
         //Can probably make this simplified once I know the SDK of the tablet, Or may not even need this code now
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -165,9 +173,17 @@ public class MainActivity extends AppCompatActivity {
             if(collageCard.numberOfImages>0){
                 pictureSlide.add(collageCard);
             }
+
+
+            loadingImageView.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));// Set up the recyclerView
             CollageRecyclerViewAdapter adapter = new CollageRecyclerViewAdapter(this, pictureSlide); //initialise the adapter being used
             recyclerView.setAdapter(adapter);//Set the recycler view with the adapter
+            animationDrawable.stop();
+
+            loadingImageView.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
 
         }
 
