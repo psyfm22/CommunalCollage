@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_READ_MEDIA = 1;
     ArrayList<CollageCard> pictureSlide = new ArrayList<CollageCard>();
-
     private static final String TAG = "COMP3018";
     RecyclerView recyclerView;
     CollageCard collageCard;
@@ -51,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);//Assign the recycler view
 
-        //Can probably make this simplified once I know the SDK of the tablet
+        //Can probably make this simplified once I know the SDK of the tablet, Or may not even need this code now
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED) {
                 // If the permissions have already been granted
@@ -67,11 +66,6 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_READ_MEDIA);
             }
         }
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        CollageRecyclerViewAdapter adapter = new CollageRecyclerViewAdapter(this, pictureSlide);
-        recyclerView.setAdapter(adapter);
-
     }
 
 
@@ -92,21 +86,22 @@ public class MainActivity extends AppCompatActivity {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images");
         collageCard = new CollageCard();//Create a new collage card
 
-        Log.d(TAG, "Reference has been made");
+        Log.d(TAG, "Reference has been made, Going to list all elements");
 
         storageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
             @Override
             public void onSuccess(ListResult listResult) {
                 Log.d(TAG, "Do we get in  on success listener");
-
                 List<StorageReference> storageReferences = listResult.getItems();
                 //We have listed all the images
 
                 if (storageReferences.isEmpty()) {
+                    //If there are no images uploaded then you simply return
                     return;
                 }
-                final int totalImages = storageReferences.size();
-                final int[] completedDownloads = {0};
+
+                final int totalImages = storageReferences.size();// total number of images needed to download
+                final int[] completedDownloads = {0};//If all the downloads are completed
 
 
                 for (StorageReference fileReference : storageReferences) {
@@ -118,13 +113,14 @@ public class MainActivity extends AppCompatActivity {
                             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                                 //On success of that file it means we now can load the bitmap
                                 Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+
                                 synchronized (collageCard) {
-                                    collageCard.bitmaps[collageCard.numberOfImages] = bitmap;
-                                    collageCard.numberOfImages++;
+                                    collageCard.bitmaps[collageCard.numberOfImages] = bitmap;//Set the collage card to have the bitmap
+                                    collageCard.numberOfImages++; // number of images is increased
 
                                     if (collageCard.numberOfImages == 4) {
-                                        pictureSlide.add(collageCard);
-                                        collageCard = new CollageCard();
+                                        pictureSlide.add(collageCard);// add the collage card to the list
+                                        collageCard = new CollageCard();//need to do a new collage card
                                     }
                                 }
                                 completedDownloads[0]++;
@@ -134,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
+                                //If failure of getting image then should move onto the next one
                                 completedDownloads[0]++;
                                 checkIfFinished(completedDownloads[0], totalImages);
                                 Log.d("COMP3018", "failure in adding file");
@@ -143,19 +140,20 @@ public class MainActivity extends AppCompatActivity {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    Log.d("COMP3018", "am i  before the actually  check");
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.d("COMP3018", "failure to list files");
+                //Failure to list all files
             }
         });
 
     }
 
     private String getFileExtension(String fileName) {
+        //returns everything after . so gets the extension
         return fileName.substring(fileName.lastIndexOf('.'));
     }
 
@@ -163,12 +161,15 @@ public class MainActivity extends AppCompatActivity {
     private void checkIfFinished(int downloadCounter, int totalDownloads){
         if (downloadCounter == totalDownloads){
             Log.d(TAG, "All downloads are complete");
+            //Once all downloads are completed we load it and then set the recycler view
             if(collageCard.numberOfImages>0){
                 pictureSlide.add(collageCard);
             }
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));// Set up the recyclerView
+            CollageRecyclerViewAdapter adapter = new CollageRecyclerViewAdapter(this, pictureSlide); //initialise the adapter being used
+            recyclerView.setAdapter(adapter);//Set the recycler view with the adapter
+
         }
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        CollageRecyclerViewAdapter adapter = new CollageRecyclerViewAdapter(this, pictureSlide);
-        recyclerView.setAdapter(adapter);
+
     }
 }
