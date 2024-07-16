@@ -6,11 +6,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -19,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.view.View;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -32,8 +29,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /*
 https://developer.android.com/training/permissions/requesting
@@ -43,8 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_READ_MEDIA = 1;
     ArrayList<CollageCard> pictureSlide = new ArrayList<CollageCard>();
-    ;
-    ActivityResultLauncher<Intent> resultLauncher;
+
     private static final String TAG = "COMP3018";
     RecyclerView recyclerView;
     CollageCard collageCard;
@@ -55,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.recyclerView);//Assign the recycler view
 
         //Can probably make this simplified once I know the SDK of the tablet
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -98,9 +92,13 @@ public class MainActivity extends AppCompatActivity {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images");
         collageCard = new CollageCard();//Create a new collage card
 
+        Log.d(TAG, "Reference has been made");
+
         storageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
             @Override
             public void onSuccess(ListResult listResult) {
+                Log.d(TAG, "Do we get in  on success listener");
+
                 List<StorageReference> storageReferences = listResult.getItems();
                 //We have listed all the images
 
@@ -145,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    Log.d("COMP3018", "am i  before the actualoly  cecker");
+                    Log.d("COMP3018", "am i  before the actually  check");
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -174,53 +172,3 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 }
-
-//        int numberOfFiles = findNumberOfImages();
-//
-//        //1,2,3,4,5
-//        for(int i=0;i<(numberOfFiles);i+=4){
-//            CollageCard collageCard = new CollageCard();
-//            int holderNumber = numberOfFiles - i;
-//
-//            if(holderNumber >=4){
-//                Log.d(TAG,"In greater or equal than 4");
-//                collageCard.numberOfImages=4;
-//                collageCard.imageUrl[0] = "/sdcard/Pictures/image"+i+".jpg";
-//                collageCard.imageUrl[1] = "/sdcard/Pictures/image"+(i+1)+".jpg";
-//                collageCard.imageUrl[2] = "/sdcard/Pictures/image"+(i+2)+".jpg";
-//                collageCard.imageUrl[3] = "/sdcard/Pictures/image"+(i+3)+".jpg";
-//
-//            }else{
-//                Log.d(TAG,"In less than 4");
-//                collageCard.numberOfImages = holderNumber;
-//                for(int j=0; j<holderNumber;j++){
-//                    collageCard.imageUrl[j] =  "/sdcard/Pictures/image"+(i+j)+".jpg";
-//                }
-//                for (int j = holderNumber; j < 4; j++) {
-//                    collageCard.imageUrl[j] = null;
-//                }
-//
-//            }
-//            pictureSlide.add(collageCard);
-//        }
-
-//
-//    private int findNumberOfImages(){
-//        int numberOfFiles = 0;
-//        File testFile = new File( Environment.getExternalStorageDirectory() + "/Pictures/");
-//        File[] files = testFile.listFiles();
-//        if (files != null) {
-//            Pattern pattern = Pattern.compile("image(\\d+)\\.jpg");//Regex pattern
-//            for (File file : files) {
-//                Matcher matcher = pattern.matcher(file.getName());
-//                if(matcher.matches()){
-//                    numberOfFiles++;
-//                }
-//            }
-//        }
-//
-//        Log.d(TAG, "The number of files=" +numberOfFiles);
-//        return numberOfFiles;
-//    }
-
-
