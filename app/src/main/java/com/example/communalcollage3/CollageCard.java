@@ -1,6 +1,12 @@
 package com.example.communalcollage3;
+import android.graphics.Bitmap;
+
 
 public class CollageCard {
     public int numberOfImages;
-    public String[] imageUrl = new String[4];
+    Bitmap[] bitmaps = new Bitmap[4];
+
+    public CollageCard() {
+        this.numberOfImages = 0;
+    }
 }

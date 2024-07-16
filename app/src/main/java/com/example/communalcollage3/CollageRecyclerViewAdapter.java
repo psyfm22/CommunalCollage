@@ -71,7 +71,6 @@ public class CollageRecyclerViewAdapter  extends RecyclerView.Adapter<CollageRec
 
     class CollageViewHolder extends RecyclerView.ViewHolder {
         ImageView[] imageViews = new ImageView[4];
-        int counter = 0;
 
         CollageViewHolder(View itemView)
         {
@@ -83,14 +82,22 @@ public class CollageRecyclerViewAdapter  extends RecyclerView.Adapter<CollageRec
         }
         void bind(final CollageCard collage)
         {
-            for(int i=0 ;i<collage.numberOfImages;i++){
-                File imgFile = new File(collage.imageUrl[i]);
-                if (imgFile.exists()) {
-                    Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                    imageViews[i].setImageBitmap(bitmap);
+            for(int i=0; i<collage.numberOfImages;i++){
+                if(collage.bitmaps[i] != null){
+                    imageViews[i].setImageBitmap(collage.bitmaps[i]);
                 }
-                counter++;
             }
+
+
+
+//            for(int i=0 ;i<collage.numberOfImages;i++){
+//                File imgFile = new File(collage.imageUrl[i]);
+//                if (imgFile.exists()) {
+//                    Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+//                    imageViews[i].setImageBitmap(bitmap);
+//                }
+//                counter++;
+//            }
         }
 
     }
