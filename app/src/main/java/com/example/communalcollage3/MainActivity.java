@@ -96,28 +96,48 @@ public class MainActivity extends AppCompatActivity {
     private void loadImagesIntoRecyclerView() {
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images");
-        collageCard = new CollageCard();
+        collageCard = new CollageCard();//Create a new collage card
+
         storageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
             @Override
             public void onSuccess(ListResult listResult) {
                 List<StorageReference> storageReferences = listResult.getItems();
-                Log.d("COMP3018", "Hello I am here");
-                Log.d("COMP3018", "the number of images" + collageCard.numberOfImages);
+                //We have listed all the images
+
+                if (storageReferences.isEmpty()) {
+                    return;
+                }
+                final int totalImages = storageReferences.size();
+                final int[] completedDownloads = {0};
+
 
                 for (StorageReference fileReference : storageReferences) {
                     try {
+                        //For each of the file references we load them into a file and try to get that file
                         File localFile = File.createTempFile("tempImage", getFileExtension(fileReference.getName()));
                         fileReference.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                //On success of that file it means we now can load the bitmap
                                 Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                                Log.d("COMP3018", "The index number "+ collageCard.numberOfImages);
-                                collageCard.bitmaps[collageCard.numberOfImages] = bitmap;
-                                collageCard.numberOfImages++;
+                                synchronized (collageCard) {
+                                    collageCard.bitmaps[collageCard.numberOfImages] = bitmap;
+                                    collageCard.numberOfImages++;
+
+                                    if (collageCard.numberOfImages == 4) {
+                                        pictureSlide.add(collageCard);
+                                        collageCard = new CollageCard();
+                                    }
+                                }
+                                completedDownloads[0]++;
+                                checkIfFinished(completedDownloads[0], totalImages);
+
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
+                                completedDownloads[0]++;
+                                checkIfFinished(completedDownloads[0], totalImages);
                                 Log.d("COMP3018", "failure in adding file");
                             }
                         });
@@ -126,12 +146,6 @@ public class MainActivity extends AppCompatActivity {
                         throw new RuntimeException(e);
                     }
                     Log.d("COMP3018", "am i  before the actualoly  cecker");
-
-                    if (collageCard.numberOfImages == 3) {
-                        Log.d("COMP3018", "Do I ever actually get in there");
-                        pictureSlide.add(collageCard);
-                        collageCard = new CollageCard();
-                    }
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -140,15 +154,25 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("COMP3018", "failure to list files");
             }
         });
-        if(collageCard.numberOfImages!=0){
-            pictureSlide.add(collageCard);
-        }
+
     }
 
     private String getFileExtension(String fileName) {
         return fileName.substring(fileName.lastIndexOf('.'));
     }
 
+
+    private void checkIfFinished(int downloadCounter, int totalDownloads){
+        if (downloadCounter == totalDownloads){
+            Log.d(TAG, "All downloads are complete");
+            if(collageCard.numberOfImages>0){
+                pictureSlide.add(collageCard);
+            }
+        }
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        CollageRecyclerViewAdapter adapter = new CollageRecyclerViewAdapter(this, pictureSlide);
+        recyclerView.setAdapter(adapter);
+    }
 }
 
 //        int numberOfFiles = findNumberOfImages();
